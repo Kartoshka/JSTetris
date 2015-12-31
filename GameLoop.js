@@ -1,16 +1,13 @@
 
 //TO DO
 /*
--the removal of row changes the number position of the next row to be deleted
--Blocks still clip/overlap on rotation (mostly rotation because it doesnt check for pieces like it does for walls)
--Look into game ending weirdly, one side of the screen was filled, other wasn't, live piece falls in the not full, game ends.
+-Allow repositioning when almost locked into place
 -You don't properly see the gray of the blocks when they're deleted, most likely I have to play around with when all the methods are called
 -Score
 -Shadow of the piece
 -Next Piece
 -Hold
 */
-
 //Array function
 Array.prototype.contains = function(element) {
 	for(var i=0; i<this.length;i++)
@@ -30,46 +27,10 @@ Game.y =0;
 Game.questionableRows = [];
 Game.deleteRows =[];
 Game.music = document.getElementById("music");
-Game.music.volume = 0.5
+Game.music.volume = 0.25
+Game.score =0;
+Game.UI = new GameUI();
 
-//Set of tetriminos for each block
-
-//L straight
-Ls = function(){
-	this.blocks =[new miniBlock("#9cffb2",0,0,20),new miniBlock("#9cffb2",0,20,20),new miniBlock("#9cffb2",0,40,20),new miniBlock("#9cffb2",20,40,20)];
-	this.center = [0,20];
-	};
-
-//L flipped
-var Lf = function(){
-	this.blocks =[new miniBlock("#ff69b4",20,0,20),new miniBlock("#ff69b4",20,20,20),new miniBlock("#ff69b4",20,40,20),new miniBlock("#ff69b4",0,40,20)];
-	this.center =[0,20];
-	};
-//I 
-var I = function(){
-	this.blocks =[new miniBlock("#ffb6c1",0,0,20),new miniBlock("#ffb6c1",0,20,20),new miniBlock("#ffb6c1",0,40,20),new miniBlock("#ffb6c1",0,60,20)];
-	this.center =[0,20];
-	};
-//T
-var T = function(){
-	this.blocks =[new miniBlock("#ffb6ed",0,0,20),new miniBlock("#ffb6ed",20,0,20),new miniBlock("#ffb6ed",40,0,20),new miniBlock("#ffb6ed",20,20,20)];
-	this.center =[20,0];
-	};
-//Block
-var B= function(){
-	this.blocks = [new miniBlock("#a854f0",0,0,20),new miniBlock("#a854f0",20,0,20),new miniBlock("#a854f0",0,20,20),new miniBlock("#a854f0",20,20,20)];
-	this.center =[0,0];
-	};
-//squigly straight
-var Ss= function(){
-	this.blocks = [new miniBlock("#54d5f0",0,0,20),new miniBlock("#54d5f0",20,0,20),new miniBlock("#54d5f0",20,20,20),new miniBlock("#54d5f0",40,20,20)];
-	this.center = [20,0];
-	};
-//squigly flipped
-var Sf = function(){
-	this.blocks =[new miniBlock("#df54f0",0,20,20),new miniBlock("#df54f0",20,20,20),new miniBlock("#df54f0",20,0,20),new miniBlock("#df54f0",40,0,20)];
-	this.center =[20,20];
-	};
 
 //Game logic variables
 //The indices run from 0 at the top of the matrix (ceiling) to 20, bottom of matrix (floor)
@@ -84,6 +45,7 @@ Game.resetField = function()
 		}
 	}
 }
+
 function collides(p)
 {
 	for(var i=0; i<p.blocks.length;i++)
@@ -111,8 +73,8 @@ function collides(p)
 						alert("Game is over");
 					}
 					//Insert our piece into position
-					Game.insertIntoPosition(p, collidingBlockHeight -(blockY+p.blocks[i].size));
-					return true;
+					//Game.insertIntoPosition(p, collidingBlockHeight -(blockY+p.blocks[i].size));
+					return (collidingBlockHeight -(blockY+p.blocks[i].size));
 				}
 				break;
 			}
@@ -120,12 +82,12 @@ function collides(p)
 		//Screen height
 		if(rayCast>=400)
 		{
-			Game.insertIntoPosition(p,400-(blockY+p.blocks[i].size));
-			return true;
+			//Game.insertIntoPosition(p,400-(blockY+p.blocks[i].size));
+			return 400-(blockY+p.blocks[i].size);
 		}
 	}
 
-	return false;
+	return null;
 
 }
 
@@ -140,7 +102,7 @@ Game.insertIntoPosition =function(piece, extraDistance)
 		var colInsert = Math.round(blockCoords[0]/20);		
 		Game.fixedBlocks[colInsert][rowInsert] = new miniBlock(piece.blocks[i].color,0,0,20);
 
-		//Questionable row
+		//Questionable row for row clearing
 		if(!Game.questionableRows.contains(rowInsert))
 			Game.questionableRows.push(rowInsert)
 	}
@@ -149,123 +111,18 @@ Game.insertIntoPosition =function(piece, extraDistance)
 
 //Piece Stuff, supposed to be currentPiece
 
-function Piece()
-{
-	this.x=100;
-	this.y=-40;
-	this.velocity=20; 
-	var shape = Math.floor(Math.random()*7);
-	switch(shape){
-		case 0:
-		this.blocks = (new Ls).blocks;
-		break;
-		case 1:
-		this.blocks = (new Lf).blocks;;
-		break;
-		case 2:
-		this.blocks = (new I).blocks;;
-		break;
-		case 3:
-		this.blocks = (new T).blocks;;
-		break;
-		case 4:
-		this.blocks = (new B).blocks;;
-		break;
-		case 5:
-		this.blocks = (new Ss).blocks;;
-		break;
-		case 6:
-		this.blocks =(new Sf).blocks; ;
-		break;
-	}
-		
-		this.draw = function(context){
-		
-			for(var i= 0; i<this.blocks.length;i++)
-			{
-				context.fillStyle = this.blocks[i].color;
-				context.fillRect(this.x+this.blocks[i].x,this.y+this.blocks[i].y,20,20);
-				context.strokeStyle ="#000000";
-				context.strokeRect(this.x+this.blocks[i].x,this.y+this.blocks[i].y,20,20);
-			}
-		};
-		this.getBlockPos = function(blockNum)
-		{
-			return [this.x +this.blocks[blockNum].x,this.y +this.blocks[blockNum].y];
-		};
-
-		this.fitScreen = function()
-		{
-			var smallestX = 999999999999;
-			var largestX =-9999999;
-			for(var i=0; i<this.blocks.length;i++)
-			{
-				if(this.getBlockPos(i)[0]<smallestX)
-					smallestX = this.getBlockPos(i)[0];
-				if((this.getBlockPos(i)[0]+this.blocks[i].size)>largestX)
-					largestX = (this.getBlockPos(i)[0]+this.blocks[i].size);
-			}
-			if(smallestX<0)
-				this.x-=smallestX;
-			if(largestX>200) //width of window
-				this.x-=(largestX-200);
-		};
-
-
-		this.rotate = function (angle){
-			angle =angle*2*Math.PI/360;
-			for(var i= 0; i<this.blocks.length;i++)
-			{
-				var tempX = this.blocks[i].x;
-				var tempY = this.blocks[i].y;
-				this.blocks[i].x = Math.cos(angle)*tempX -Math.sin(angle)*tempY;
-				this.blocks[i].y = Math.sin(angle)*tempX +Math.cos(angle)*tempY;
-			}
-			this.fitScreen();
-		};
-
-		this.moveSideways = function(distance)
-		{
-			this.x+=distance;
-			this.fitScreen();
-		};
-
-		this.advance = function()
-		{	
-				var currentY = this.y;
-				if(!collides(this)){
-				this.y=(Math.floor(currentY/20) +1)*20;
-				}
-				else
-				{
-					Live = new Piece();
-				}
-		};	
-}
 
 //Tetrimino
-function miniBlock(colorS, xPos, yPos, sizeP)
-{
-	this.color = colorS;
-	this.x = xPos;
-	this.y= yPos;
-	this.size = sizeP;
-}
 
 var runtime =0;
-Game.updateState = function()
-{
-	 Game.update();
-  	 Game.draw();
-}
+
 Game.clearBlocks = function()
 {
 	while(Game.questionableRows.length !=0)
 	{
 		var clearRow = true;
 		var currentRow = Game.questionableRows.pop();
-		console.log("currentRow" + currentRow);
-		for(var c=0; c<Game.fixedBlocks.length;c++)
+		for(var c=Game.fixedBlocks.length-1; c>=0;c--)
 		{
 			clearRow = clearRow && (Game.fixedBlocks[c][currentRow] !=null);
 		}
@@ -273,34 +130,31 @@ Game.clearBlocks = function()
 		if(clearRow)
 		{
 			Game.deleteRows.push(currentRow);
-			for(var c=0; c<Game.fixedBlocks.length;c++)
-			{
-			Game.fixedBlocks[c][currentRow].color ="#838182";
-			}
 		}
 
 	}
-	Game.draw();
-
-
-	while(Game.deleteRows.length !=0)
+	//we sort this array so that we start deleting top rows first
+	Game.deleteRows = Game.deleteRows.sort();
+	//Delete every row in the array
+	for(var i=0;i<Game.deleteRows.length;i++)
 	{
 		//find which row to delete
-		var rowDeleted = Game.deleteRows.pop();
+		var rowDeleted = Game.deleteRows[i];
 		//for every column in that row (supposed to be 10 cols per row)
 		for(var c=0; c<Game.fixedBlocks.length;c++)
 		{
 			//we look at all the tetriminos ABOVE our row to be deleted , so we decrement our indices
 			for(var r=rowDeleted;r>0;r--)
 			{
+				//We bring down the 
 				Game.fixedBlocks[c][r] = Game.fixedBlocks[c][r-1];
 			}
+			//Top block becomes null
 			Game.fixedBlocks[c][0] =null;
 		}
 	}
-
-	Game.draw();
-
+	Game.score += Game.deleteRows.length;
+	Game.deleteRows= [];
 
 }
 //Game Stuff
@@ -316,7 +170,7 @@ window.addEventListener('keydown',stopScroll,true);
 //Sets user controls
 document.getElementById("myCanvas").addEventListener('keydown', Game.userInput, true);
 //Gets music and  plays
-Game.music.play()
+Game.music.play();
 //Starts update loop
 Game.resetField();
 Live = new Piece();
@@ -324,15 +178,14 @@ Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
 }
 
 Game.run = function() {
-	if(runtime%20==0)
-	 {
-	 	Game.updateState();
-  	}
+
+		 Game.update();
   	if(Game.questionableRows.length !=0)
   	{
   		Game.clearBlocks();
   	}
   	runtime++;
+ 	Game.draw();
 };
 
 
@@ -356,17 +209,24 @@ Game.draw = function(){
 		}
 	}
 	Live.draw(Game.canvas);
+	Game.UI.draw();
 
 }
 
 Game.update = function(){
 
-	if(!collides(Live))
-		Live.advance();
-	else
-	{
-		Live = new Piece();
+
+	var collider = collides(Live);
+	if((runtime%20) ==0){
+		if(collider == null )
+			Live.advance();
+		else
+		{
+			Game.insertIntoPosition(Live,collider);
+			Live = new Piece();
+		}
 	}
+	this.UI.updateScore(this.score);
 
 
 }
@@ -395,12 +255,13 @@ Game.userInput = function(e){
 				Live.moveSideways(-20);
 				break;
 				case 32:
-				Live.advance();
+				var collider = collides(Live)
+				if(collider == null)
+					Live.advance();
 				break;
-			}					
-		Game.draw();
-		controlCheck =true;
+			}						
 	}
+	controlCheck =true;
 }
 
 stopScroll = function(e)

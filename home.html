@@ -7,10 +7,15 @@
 <button onclick="Game.start()">Run</button>
 <button onclick="Game.stop()">Stop</button>
 <audio id="music" src="tune.mp3" loop="true"></audio>
-<p>Canvas:</p>
+<p>Tetris!:</p>
 <canvas id="myCanvas" width="200" height="400" style="border:1px solid #d3d3d3;" tabindex="0">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
+<canvas id ="UI" width="100" height="400" style="border:1px solid #d3d3d3;" tabindex="0">
 </body>
+<script type="text/javascript" charset="utf-8" src="miniBlock.js"></script>
+<script type="text/javascript" charset="utf-8" src="Piece.js"></script>
+<script type="text/javascript" charset="utf-8" src="GameUI.js"></script>
 <script type="text/javascript" charset="utf-8" src="GameLoop.js"></script>
+
 </html>
