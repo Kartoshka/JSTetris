@@ -22,6 +22,8 @@ return false;
 var Live;
 var Game ={};
 Game.fps = 60;
+Game.level;
+Game.speed =30;
 Game.x =0;
 Game.y =0;
 Game.height;
@@ -30,6 +32,7 @@ Game.blockSize =20;
 Game.questionableRows = [];
 Game.deleteRows =[];
 Game.music = document.getElementById("music");
+Game.musicToggle =true;
 Game.music.volume = 0.25
 Game.score =0;
 Game.UI = new GameUI();
@@ -37,9 +40,10 @@ Game.UI = new GameUI();
 
 //Game logic variables
 //The indices run from 0 at the top of the matrix (ceiling) to 20, bottom of matrix (floor)
-Game.fixedBlocks = [];
+Game.fixedBlocks;
 Game.resetField = function()
 {
+	Game.fixedBlocks =[];
 	for(var col =0; col<Game.width/Game.blockSize;col++)
 	{
 		Game.fixedBlocks.push([]);
@@ -60,7 +64,6 @@ function collides(p)
 		var blockY = p.getBlockPos(i)[1];
 		var rayCast = blockY + p.blocks[i].size; //The ray cast in front of the block
 		var ghostRow = Math.round(rayCast/20);
-		console.log(p.blocks[i].size);
 		if(rayCast == Game.height) //screenSize
 		{
 			Game.fixPieceInMatrix(p);
@@ -68,10 +71,10 @@ function collides(p)
 		}
 		else if(Game.fixedBlocks[ghostCol][ghostRow] !=null)
 		{
-			if(blockY == 0) //If our block just spawned and it collided, game ends
+			if(blockY <= 0) //If our block just spawned and it collided, game ends
 			{
-				Game.stop();
 				alert("Game is over");
+				Game.stop();
 			}
 			Game.fixPieceInMatrix(p);
 			return true;
@@ -89,7 +92,9 @@ Game.fixPieceInMatrix = function(piece)
 		//Calculate row and column in which to insert tetrimino
 		var rowInsert = Math.round((blockCoords[1]/20));
 		var colInsert = Math.round(blockCoords[0]/20);
-		Game.fixedBlocks[colInsert][rowInsert] = new miniBlock(piece.blocks[i].color,0,0,20);
+
+		Game.fixedBlocks[colInsert][rowInsert] = new miniBlock(piece.blocks[i].color,0,0,piece.blocks[i].size);
+
 		if(!Game.questionableRows.contains(rowInsert)) //Questionable row for row clearing
 			Game.questionableRows.push(rowInsert)
 	}
@@ -155,7 +160,8 @@ window.addEventListener('keydown',stopScroll,true);
 document.getElementById("myCanvas").addEventListener('keydown', Game.userInput, true);
 
 //Gets music and  plays
-Game.music.play();
+if(Game.musicToggle)
+	Game.music.play();
 
 //Gets screen dimension
 Game.height = document.getElementById("myCanvas").height;
@@ -170,7 +176,7 @@ Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
 
 Game.run = function() {
 
-	if(runtime%20 ==0)
+	if(runtime%Game.speed ==0)
 	{
 		Game.update();
 	}
@@ -222,9 +228,14 @@ Game.update = function(){
 };
 
 Game.stop = function(){
+	Live.y =-999999999;//Hides piece
 	clearInterval(Game._intervalId);
 	Game.music.pause();
+	Game.resetField();
 	Game.music.currentTime =0;
+	Game.score =0;
+	Game.UI.updateScore(Game.score);
+	Game.draw();
 
 };
 var controlCheck =true;
@@ -258,3 +269,18 @@ stopScroll = function(e)
 	e.preventDefault();
 };
 
+//Jquery
+$(document).ready(function(){
+    $('a.toggler').click(function(){
+        $(this).toggleClass('off');
+        if(Game.musicToggle)
+        {
+        	Game.music.pause();
+        }
+        else
+        {
+        	Game.music.play();
+        }
+        Game.musicToggle = !Game.musicToggle;
+    });
+});

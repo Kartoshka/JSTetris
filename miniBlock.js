@@ -7,37 +7,44 @@ function miniBlock(colorS, xPos, yPos, sizeP)
 }
 
 Ls = function(blockSize){
-	this.blocks =[new miniBlock("#9cffb2",0,0,blockSize),new miniBlock("#9cffb2",0,blockSize,blockSize),new miniBlock("#9cffb2",0,2*blockSize,blockSize),new miniBlock("#9cffb2",blockSize,2*blockSize,blockSize)];
+	this.color ="#9cffb2";
+	this.blocks =[new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,0,2*blockSize,blockSize),new miniBlock(this.color,blockSize,2*blockSize,blockSize)];
 	this.center = [0,blockSize];
 	};
 
 //L flipped
 var Lf = function(blockSize){
-	this.blocks =[new miniBlock("#ff69b4",blockSize,0,blockSize),new miniBlock("#ff69b4",blockSize,blockSize,blockSize),new miniBlock("#ff69b4",blockSize,2*blockSize,blockSize),new miniBlock("#ff69b4",0,2*blockSize,blockSize)];
+	this.color ="#ff69b4";
+	this.blocks =[new miniBlock(this.color,blockSize,0,blockSize),new miniBlock(this.color,blockSize,blockSize,blockSize),new miniBlock(this.color,blockSize,2*blockSize,blockSize),new miniBlock(this.color,0,2*blockSize,blockSize)];
 	this.center =[0,blockSize];
 	};
 //I 
 var I = function(blockSize){
-	this.blocks =[new miniBlock("#ffb6c1",0,0,blockSize),new miniBlock("#ffb6c1",0,blockSize,blockSize),new miniBlock("#ffb6c1",0,2*blockSize,blockSize),new miniBlock("#ffb6c1",0,60,blockSize)];
+	this.color ="#b662aa";
+	this.blocks =[new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,0,2*blockSize,blockSize),new miniBlock(this.color,0,60,blockSize)];
 	this.center =[0,blockSize];
 	};
 //T
 var T = function(blockSize){
-	this.blocks =[new miniBlock("#ffb6ed",0,0,blockSize),new miniBlock("#ffb6ed",blockSize,0,blockSize),new miniBlock("#ffb6ed",2*blockSize,0,blockSize),new miniBlock("#ffb6ed",blockSize,blockSize,blockSize)];
+	this.color ="#f268ad";
+	this.blocks =[new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,blockSize,0,blockSize),new miniBlock(this.color,2*blockSize,0,blockSize),new miniBlock(this.color,blockSize,blockSize,blockSize)];
 	this.center =[blockSize,0];
 	};
 //Block
 var B= function(blockSize){
-	this.blocks = [new miniBlock("#a854f0",0,0,blockSize),new miniBlock("#a854f0",blockSize,0,blockSize),new miniBlock("#a854f0",0,blockSize,blockSize),new miniBlock("#a854f0",blockSize,blockSize,blockSize)];
+	this.color ="#a854f0";
+	this.blocks = [new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,blockSize,0,blockSize),new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,blockSize,blockSize,blockSize)];
 	this.center =[0,0];
 	};
 //squigly straight
 var Ss= function(blockSize){
-	this.blocks = [new miniBlock("#54d5f0",0,0,blockSize),new miniBlock("#54d5f0",blockSize,0,blockSize),new miniBlock("#54d5f0",blockSize,blockSize,blockSize),new miniBlock("#54d5f0",2*blockSize,blockSize,blockSize)];
+	this.color ="#54d5f0";
+	this.blocks = [new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,blockSize,0,blockSize),new miniBlock(this.color,blockSize,blockSize,blockSize),new miniBlock(this.color,2*blockSize,blockSize,blockSize)];
 	this.center = [blockSize,0];
 	};
 //squigly flipped
 var Sf = function(blockSize){
-	this.blocks =[new miniBlock("#df54f0",0,blockSize,blockSize),new miniBlock("#df54f0",blockSize,blockSize,blockSize),new miniBlock("#df54f0",blockSize,0,blockSize),new miniBlock("#df54f0",2*blockSize,0,blockSize)];
+	this.color ="#df54f0";
+	this.blocks =[new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,blockSize,blockSize,blockSize),new miniBlock(this.color,blockSize,0,blockSize),new miniBlock(this.color,2*blockSize,0,blockSize)];
 	this.center =[blockSize,blockSize];
 	};
