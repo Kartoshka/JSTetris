@@ -36,6 +36,7 @@ var GameUI = function(){
 		{
 			context.fillStyle = p.blocks[b].color;
 			context.fillRect(x+p.blocks[b].x,y+p.blocks[b].y,p.blocks[b].size,p.blocks[b].size);
+			context.strokeRect(x+p.blocks[b].x,y+p.blocks[b].y,p.blocks[b].size,p.blocks[b].size);
 		}
 
 		canvas.fillStyle ="black";

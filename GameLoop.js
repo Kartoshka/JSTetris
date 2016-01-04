@@ -257,7 +257,7 @@ Game.update = function(){
 };
 
 Game.stop = function(){
-	Live.y =-999999999;//Hides piece
+	Live.y =-999999999; //Hides piece
 	clearInterval(Game._intervalId);
 	Game.music.pause();
 	Game.resetField();
