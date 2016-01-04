@@ -1,9 +1,9 @@
-function Piece(fB,blockSize)
+function Piece(fB,blockSize,active)
 {
-
+	this.shadow =!active;
 	this.fixedBlocks = fB
 	this.x=100;
-	this.y=-40;
+	this.y=-20;
 	this.velocity=blockSize; 
 	var shape = Math.floor(Math.random()*7);
 	switch(shape){
@@ -31,16 +31,31 @@ function Piece(fB,blockSize)
 	}
 	this.blocks =shape.blocks;
 	this.center = shape.center;
+
+	if(!this.shadow)
+		{
+			this.shadowPiece = new Piece(this.fixedBlocks, this.velocity, false);
+			this.shadowPiece.blocks = shape.blocks;
+			this.shadowPiece.center = shape.center;
+		}
 		
 		this.draw = function(context){
 		
+			if(!this.shadow)
+				this.shadowPiece.draw(context);
+
 			for(var i= 0; i<this.blocks.length;i++)
 			{
-				context.fillStyle = this.blocks[i].color;
+				if(!this.shadow)
+					context.fillStyle = this.blocks[i].color;
+				else
+					context.fillStyle = "#c7c7c7";
+
 				context.fillRect(this.x+this.blocks[i].x,this.y+this.blocks[i].y,20,20);
 				context.strokeStyle ="#000000";
 				context.strokeRect(this.x+this.blocks[i].x,this.y+this.blocks[i].y,20,20);
 			}
+			
 		};
 		this.getBlockPos = function(blockNum)
 		{
@@ -134,4 +149,5 @@ function Piece(fB,blockSize)
 				this.y=(Math.floor(this.y/20) +1)*distance;
 
 		};	
-}
+};
+

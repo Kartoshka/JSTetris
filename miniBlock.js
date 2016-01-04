@@ -21,7 +21,7 @@ var Lf = function(blockSize){
 //I 
 var I = function(blockSize){
 	this.color ="#b662aa";
-	this.blocks =[new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,0,2*blockSize,blockSize),new miniBlock(this.color,0,60,blockSize)];
+	this.blocks =[new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,0,2*blockSize,blockSize),new miniBlock(this.color,0,3*blockSize,blockSize)];
 	this.center =[0,blockSize];
 	};
 //T

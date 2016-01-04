@@ -1,12 +1,12 @@
 
 //TO DO
 /*
--Allow repositioning when almost locked into place
--You don't properly see the gray of the blocks when they're deleted, most likely I have to play around with when all the methods are called
 -Score
+-Levels
 -Shadow of the piece
 -Next Piece
 -Hold
+-You don't properly see the gray of the blocks when they're deleted, most likely I have to play around with when all the methods are called
 */
 //Array function
 Array.prototype.contains = function(element) {
@@ -23,7 +23,7 @@ var Live;
 var Game ={};
 Game.fps = 60;
 Game.level;
-Game.speed =30;
+Game.speed =10;
 Game.x =0;
 Game.y =0;
 Game.height;
@@ -53,6 +53,18 @@ Game.resetField = function()
 		}
 	}
 }
+function updateShadow(p)
+{
+	var shadow = p.shadowPiece;
+	shadow.y = p.y;
+	shadow.x =p.x;
+	shadow.blocks = p.blocks;
+	while(!collides(shadow))
+	{
+		shadow.advance(Game.blockSize);
+	}
+
+}
 
 function collides(p)
 {
@@ -66,17 +78,22 @@ function collides(p)
 		var ghostRow = Math.round(rayCast/20);
 		if(rayCast == Game.height) //screenSize
 		{
-			Game.fixPieceInMatrix(p);
+			if(!p.shadow)
+				Game.fixPieceInMatrix(p);
 			return true;
 		}
 		else if(Game.fixedBlocks[ghostCol][ghostRow] !=null)
 		{
+		if(!p.shadow){
 			if(blockY <= 0) //If our block just spawned and it collided, game ends
 			{
-				alert("Game is over");
 				Game.stop();
+				alert("Game is over");
+				
 			}
+			
 			Game.fixPieceInMatrix(p);
+		}
 			return true;
 		}
 	}
@@ -175,7 +192,8 @@ Game.width = document.getElementById("myCanvas").width;
 
 //Starts update loop
 Game.resetField();
-Live = new Piece(Game.fixedBlocks, Game.blockSize);
+Live = new Piece(Game.fixedBlocks, Game.blockSize,true);
+updateShadow(Live);
 Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
 
 };
@@ -229,7 +247,8 @@ Game.update = function(){
 	}
 	else
 	{
-		Live = new Piece(Game.fixedBlocks,Game.blockSize);
+		Live = new Piece(Game.fixedBlocks,Game.blockSize,true);
+		updateShadow(Live);
 	}
 };
 
@@ -269,7 +288,8 @@ Game.userInput = function(e){
 				case 32:
 				Game.hardDrop(Live);
 				break;
-			}						
+			}
+			 updateShadow(Live);
 	}
 	controlCheck =true;
 };

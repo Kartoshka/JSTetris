@@ -22,17 +22,24 @@ a.toggler.off {
 </style>
 </head>
 <body>
-<button onclick="Game.start()">Run</button>
-<button onclick="Game.stop()">Stop</button>
-<a href="#" class="toggler">&nbsp;</a> Toggle Music
+
 <audio id="music" src="tune.mp3" loop="true"></audio>
 <div align="center">
-<p>Tetris!</p>
+<button onclick="Game.start()">Run</button>
+<button onclick="Game.stop()">Stop</button> </br></br>
+Toggle Music <a href="#" class="toggler">&nbsp;</a> 
+<h1>Tetris!</h1>
 <canvas id="myCanvas" width="200" height="400" style="border:1px solid #d3d3d3;" tabindex="0">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 <canvas id ="UI" width="100" height="400" style="border:1px solid #d3d3d3;" tabindex="0">
 </div>
+<center>
+<h2>Controls</h2>
+<p><b>Move Left/Right:</b> Left/Right arrow</p>
+<p><b>Rotate CCW/CW:</b> z/x</p>
+<p> <b>Soft Drop/Hard Drop:</b> Down arrow / Space bar</p>
+</center>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
