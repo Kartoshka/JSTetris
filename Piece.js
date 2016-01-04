@@ -1,33 +1,40 @@
-function Piece(fB,blockSize,active)
+
+Piece = function(fB,blockSize,active, shape)
 {
+
 	this.shadow =!active;
 	this.fixedBlocks = fB
 	this.x=100;
 	this.y=-20;
 	this.velocity=blockSize; 
-	var shape = Math.floor(Math.random()*7);
-	switch(shape){
-		case 0:
-		shape = (new Ls(this.velocity));
-		break;
-		case 1:
-		shape = (new Lf(this.velocity));;
-		break;
-		case 2:
-		shape = (new I(this.velocity));
-		break;
-		case 3:
-		shape = (new T(this.velocity));
-		break;
-		case 4:
-		shape = (new B(this.velocity));
-		break;
-		case 5:
-		shape = (new Ss(this.velocity));
-		break;
-		case 6:
-		shape =(new Sf(this.velocity));
-		break;
+	this.shapeName =shape;
+	if(shape ==null)
+	{
+		this.shapeName =Math.floor(Math.random()*7);;
+	}
+	var shape;
+	switch(this.shapeName){
+			case 0:
+			shape = (new Ls(this.velocity));
+			break;
+			case 1:
+			shape = (new Lf(this.velocity));;
+			break;
+			case 2:
+			shape = (new I(this.velocity));
+			break;
+			case 3:
+			shape = (new T(this.velocity));
+			break;
+			case 4:
+			shape = (new B(this.velocity));
+			break;
+			case 5:
+			shape = (new Ss(this.velocity));
+			break;
+			case 6:
+			shape =(new Sf(this.velocity));
+			break;
 	}
 	this.blocks =shape.blocks;
 	this.center = shape.center;
@@ -149,5 +156,19 @@ function Piece(fB,blockSize,active)
 				this.y=(Math.floor(this.y/20) +1)*distance;
 
 		};	
+}
+
+function Piece(fB,blockSize,active)
+{
+	this.shadow =!active;
+	this.fixedBlocks = fB
+	this.x=100;
+	this.y=-20;
+	this.velocity=blockSize;
+
+
+	new Piece(fB, blockSize, active, shape);
 };
+
+
 

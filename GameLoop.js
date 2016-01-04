@@ -20,10 +20,12 @@ return false;
 
 //Game
 var Live;
+var hold;
+var next;
 var Game ={};
 Game.fps = 60;
 Game.level;
-Game.speed =10;
+Game.speed =30;
 Game.x =0;
 Game.y =0;
 Game.height;
@@ -36,6 +38,7 @@ Game.musicToggle =true;
 Game.music.volume = 0.25
 Game.score =0;
 Game.UI = new GameUI();
+Game.canSwitch =true;
 
 
 //Game logic variables
@@ -105,6 +108,7 @@ Game.hardDrop = function(p){
 	{
 		p.advance(Game.blockSize);
 	}
+	Game.update();
 
 };
 Game.fixPieceInMatrix = function(piece)
@@ -192,8 +196,8 @@ Game.width = document.getElementById("myCanvas").width;
 
 //Starts update loop
 Game.resetField();
-Live = new Piece(Game.fixedBlocks, Game.blockSize,true);
-updateShadow(Live);
+Game.newPiece();
+runtime =0;
 Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
 
 };
@@ -247,8 +251,8 @@ Game.update = function(){
 	}
 	else
 	{
-		Live = new Piece(Game.fixedBlocks,Game.blockSize,true);
-		updateShadow(Live);
+		Game.newPiece();
+		Game.canSwitch =true;
 	}
 };
 
@@ -264,6 +268,39 @@ Game.stop = function(){
 	Live=null;
 
 };
+
+Game.newPiece = function()
+{
+	if(next !=null)
+		Live = next;
+	else
+		Live = new Piece(Game.fixedBlocks,Game.blockSize,true);
+
+	next = new Piece(Game.fixedBlocks,Game.blockSize,true);
+	updateShadow(Live);
+	Game.UI.nextP(next);
+	
+};
+Game.hold = function()
+{
+	if(Game.canSwitch){
+		Game.canSwitch =false;
+		if(hold == null){
+
+			hold = new Piece(Game.fixedBlocks,Game.blockSize,true,Live.shapeName);
+			Game.UI.onHold(hold);
+			Game.newPiece();
+		}
+		else
+		{
+			var temp = new Piece(Game.fixedBlocks,Game.blockSize,true,hold.shapeName);
+			hold = new Piece(Game.fixedBlocks,Game.blockSize,true,Live.shapeName);
+			Live = temp;
+		}
+}
+	
+};
+
 var controlCheck =true;
 //Need to fit into bounds the object
 Game.userInput = function(e){
@@ -288,8 +325,11 @@ Game.userInput = function(e){
 				case 32:
 				Game.hardDrop(Live);
 				break;
+				case 16:
+				Game.hold(Live);
+				break;
 			}
-			 updateShadow(Live);
+		 updateShadow(Live);
 	}
 	controlCheck =true;
 };
