@@ -83,7 +83,13 @@ function collides(p)
 	return false;
 };
 
+Game.hardDrop = function(p){
+	while(!collides(p))
+	{
+		p.advance(Game.blockSize);
+	}
 
+};
 Game.fixPieceInMatrix = function(piece)
 {
 	for(var i=0; i<piece.blocks.length;i++)
@@ -219,7 +225,7 @@ Game.update = function(){
 
 	if(!collides(Live))
 	{
-		Live.advance(); //TODO set by specific distance
+		Live.advance(Game.blockSize); //TODO set by specific distance
 	}
 	else
 	{
@@ -245,20 +251,23 @@ Game.userInput = function(e){
 		if(controlCheck){
 			controlCheck = false;
 			switch(e.keyCode){
-				case 38 : //Up
+				case 88 : //Up
 				Live.rotate(90);
 				break;
-				case 40: //Down
+				case 90: //Down
 				Live.rotate(-90);
 				break;
 				case 39: //Right
-				Live.moveSideways(20);
+				Live.moveSideways(Game.blockSize);
 				break;
 				case 37: //Left
-				Live.moveSideways(-20);
+				Live.moveSideways(-Game.blockSize);
+				break;
+				case 40:
+				Game.update();
 				break;
 				case 32:
-				Game.update();
+				Game.hardDrop(Live);
 				break;
 			}						
 	}

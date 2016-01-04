@@ -128,15 +128,10 @@ function Piece(fB,blockSize)
 
 		};
 
-		this.advance = function()
+		this.advance = function(distance)
 		{	
-				var currentY = this.y;
-				if(!collides(this)){
-				this.y=(Math.floor(currentY/20) +1)*20;
-				}
-				else
-				{
-					Live = new Piece();
-				}
+
+				this.y=(Math.floor(this.y/20) +1)*distance;
+
 		};	
 }
