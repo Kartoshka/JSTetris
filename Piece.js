@@ -1,30 +1,31 @@
-function Piece()
+function Piece(fB,blockSize)
 {
+	this.fixedBlocks = fB
 	this.x=100;
 	this.y=-40;
-	this.velocity=20; 
+	this.velocity=blockSize; 
 	var shape = Math.floor(Math.random()*7);
 	switch(shape){
 		case 0:
-		this.blocks = (new Ls).blocks;
+		this.blocks = (new Ls(this.velocity)).blocks;
 		break;
 		case 1:
-		this.blocks = (new Lf).blocks;;
+		this.blocks = (new Lf(this.velocity)).blocks;;
 		break;
 		case 2:
-		this.blocks = (new I).blocks;;
+		this.blocks = (new I(this.velocity)).blocks;;
 		break;
 		case 3:
-		this.blocks = (new T).blocks;;
+		this.blocks = (new T(this.velocity)).blocks;;
 		break;
 		case 4:
-		this.blocks = (new B).blocks;;
+		this.blocks = (new B(this.velocity)).blocks;;
 		break;
 		case 5:
-		this.blocks = (new Ss).blocks;;
+		this.blocks = (new Ss(this.velocity)).blocks;;
 		break;
 		case 6:
-		this.blocks =(new Sf).blocks; ;
+		this.blocks =(new Sf(this.velocity)).blocks; ;
 		break;
 	}
 		
@@ -46,10 +47,9 @@ function Piece()
 
 		this.fitScreen = function()
 		{
-			if(!(this.x>=0 && this.x<(4*this.blocks[0].size)))
-			{	
 				var smallestX = 999999999999;
 				var largestX =-9999999;
+
 				for(var i=0; i<this.blocks.length;i++)
 				{
 					if(this.getBlockPos(i)[0]<smallestX)
@@ -59,29 +59,31 @@ function Piece()
 				}
 				if(smallestX<0)
 					this.x-=smallestX;
-				if(largestX>200) //width of window
-					this.x-=(largestX-200);
-			}
+				if(largestX>this.fixedBlocks.length*this.velocity) //width of window
+					this.x-=(largestX-(this.fixedBlocks.length*this.velocity));
+
 		};
 
 
 		this.rotate = function (angle){
-			angle =angle*2*Math.PI/360;
+			var angle =angle*2*Math.PI/360;
 			var newCoords = [];
 			var canMove = true;
 			//We will calculate the tentative new position of every block and evaluate whether that position is available
-			for(var i= 0; i<this.blocks.length;i++)
+			for(var i= 0; i<this.blocks.length && canMove;i++)
 			{
-				
 				var tempX =Math.cos(angle)*this.blocks[i].x -Math.sin(angle)*this.blocks[i].y;
 				var tempY =Math.sin(angle)*this.blocks[i].x +Math.cos(angle)*this.blocks[i].y;
+
 				newCoords.push([tempX,tempY]); //new set of coordiantes
 
 				var blockCol =(Math.round((tempX +this.x)/this.blocks[i].size));
 				var blockRow =(Math.round((tempY+this.y)/this.blocks[i].size));
-				if(blockCol >= 0 && blockCol <(Game.fixedBlocks.length))
-					canMove = canMove && (Game.fixedBlocks[blockCol][blockRow]==null);   
 
+				//If we dont spill out from either wall we verify whether the position is available
+				if(blockCol >= 0 && blockCol <(this.fixedBlocks.length))
+					canMove = canMove && (this.fixedBlocks[blockCol][blockRow]==null); 
+				//We dont actually prevent insertion into out of bounds
 			}
 
 			if(canMove)
@@ -106,10 +108,10 @@ function Piece()
 				var blockCol =(Math.round(this.getBlockPos(i)[0]/this.blocks[i].size));
 				//If our block is on the edges of the screen, we do not need to check for collisions with block, 
 				//because there are none on the outside and our fitScreen method will take care of that
-				if(blockCol != 0 && blockCol != (Game.fixedBlocks.length-1))
+				if(blockCol != 0 && blockCol != (this.fixedBlocks.length-1))
 					canMove = canMove 
-						&& (Game.fixedBlocks[blockCol-1][blockRow]==null) //Check the column to the left
-					 && (Game.fixedBlocks[blockCol+1][blockRow]==null);   //Check the column to the right
+						&& (this.fixedBlocks[blockCol-1][blockRow]==null) //Check the column to the left
+					 && (this.fixedBlocks[blockCol+1][blockRow]==null);   //Check the column to the right
 			}
 			if(canMove)
 			{

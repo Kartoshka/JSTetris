@@ -24,6 +24,9 @@ var Game ={};
 Game.fps = 60;
 Game.x =0;
 Game.y =0;
+Game.height;
+Game.width;
+Game.blockSize =20;
 Game.questionableRows = [];
 Game.deleteRows =[];
 Game.music = document.getElementById("music");
@@ -34,12 +37,13 @@ Game.UI = new GameUI();
 
 //Game logic variables
 //The indices run from 0 at the top of the matrix (ceiling) to 20, bottom of matrix (floor)
-Game.fixedBlocks = [[],[],[],[],[],[],[],[],[],[]];
+Game.fixedBlocks = [];
 Game.resetField = function()
 {
-	for(var col =0; col<Game.fixedBlocks.length;col++)
+	for(var col =0; col<Game.width/Game.blockSize;col++)
 	{
-		for(var row =0; row<20;row++)
+		Game.fixedBlocks.push([]);
+		for(var row =0; row<(Game.height/Game.blockSize);row++)
 		{
 			Game.fixedBlocks[col].push(null);
 		}
@@ -54,65 +58,45 @@ function collides(p)
 		var ghostCol = Math.round(blockX/20);//Column we're above
 
 		var blockY = p.getBlockPos(i)[1];
-		var rayCast = blockY + p.velocity +p.blocks[i].size; //The ray cast in front of the block
-		
-		for(var c = 0; c<Game.fixedBlocks[(ghostCol)].length;c++)
+		var rayCast = blockY + p.blocks[i].size; //The ray cast in front of the block
+		var ghostRow = Math.round(rayCast/20);
+		console.log(p.blocks[i].size);
+		if(rayCast == Game.height) //screenSize
 		{
-			//As soon as we hit the top block
-			if(Game.fixedBlocks[ghostCol][c] !=null)
-			{
-				//get that block's height
-				var collidingBlockHeight = Game.fixedBlocks[ghostCol][c].size*c;
-				//we check if our ray hit something, but also if it's in front of us, not behind us
-				if(rayCast>collidingBlockHeight && blockY<collidingBlockHeight) 
-				{
-					//stops game? maybe XD
-					if(collidingBlockHeight == 0)
-					{
-						Game.stop();
-						alert("Game is over");
-					}
-					//Insert our piece into position
-					//Game.insertIntoPosition(p, collidingBlockHeight -(blockY+p.blocks[i].size));
-					return (collidingBlockHeight -(blockY+p.blocks[i].size));
-				}
-				break;
-			}
+			Game.fixPieceInMatrix(p);
+			return true;
 		}
-		//Screen height
-		if(rayCast>=400)
+		else if(Game.fixedBlocks[ghostCol][ghostRow] !=null)
 		{
-			//Game.insertIntoPosition(p,400-(blockY+p.blocks[i].size));
-			return 400-(blockY+p.blocks[i].size);
+			if(blockY == 0) //If our block just spawned and it collided, game ends
+			{
+				Game.stop();
+				alert("Game is over");
+			}
+			Game.fixPieceInMatrix(p);
+			return true;
 		}
 	}
+	return false;
+};
 
-	return null;
 
-}
-
-Game.insertIntoPosition =function(piece, extraDistance)
+Game.fixPieceInMatrix = function(piece)
 {
 	for(var i=0; i<piece.blocks.length;i++)
 	{
 		var blockCoords = piece.getBlockPos(i);
-		//Always round the indices because JS is dumb -_-
 		//Calculate row and column in which to insert tetrimino
-		var rowInsert = Math.round((blockCoords[1]+extraDistance)/20);
-		var colInsert = Math.round(blockCoords[0]/20);		
+		var rowInsert = Math.round((blockCoords[1]/20));
+		var colInsert = Math.round(blockCoords[0]/20);
 		Game.fixedBlocks[colInsert][rowInsert] = new miniBlock(piece.blocks[i].color,0,0,20);
-
-		//Questionable row for row clearing
-		if(!Game.questionableRows.contains(rowInsert))
+		if(!Game.questionableRows.contains(rowInsert)) //Questionable row for row clearing
 			Game.questionableRows.push(rowInsert)
 	}
+	
 
-}
+};
 
-//Piece Stuff, supposed to be currentPiece
-
-
-//Tetrimino
 
 var runtime =0;
 
@@ -156,7 +140,7 @@ Game.clearBlocks = function()
 	Game.score += Game.deleteRows.length;
 	Game.deleteRows= [];
 
-}
+};
 //Game Stuff
 
 Game.start =function()
@@ -169,20 +153,32 @@ document.getElementById("myCanvas").focus();
 window.addEventListener('keydown',stopScroll,true);
 //Sets user controls
 document.getElementById("myCanvas").addEventListener('keydown', Game.userInput, true);
+
 //Gets music and  plays
 Game.music.play();
+
+//Gets screen dimension
+Game.height = document.getElementById("myCanvas").height;
+Game.width = document.getElementById("myCanvas").width;
+
 //Starts update loop
 Game.resetField();
-Live = new Piece();
+Live = new Piece(Game.fixedBlocks, Game.blockSize);
 Game._intervalId = setInterval(Game.run, 1000 / Game.fps);
-}
+
+};
 
 Game.run = function() {
 
-		 Game.update();
+	if(runtime%20 ==0)
+	{
+		Game.update();
+	}
+
   	if(Game.questionableRows.length !=0)
   	{
   		Game.clearBlocks();
+  		Game.UI.updateScore(Game.score);
   	}
   	runtime++;
  	Game.draw();
@@ -211,31 +207,26 @@ Game.draw = function(){
 	Live.draw(Game.canvas);
 	Game.UI.draw();
 
-}
+};
 
 Game.update = function(){
 
-
-	var collider = collides(Live);
-	if((runtime%20) ==0){
-		if(collider == null )
-			Live.advance();
-		else
-		{
-			Game.insertIntoPosition(Live,collider);
-			Live = new Piece();
-		}
+	if(!collides(Live))
+	{
+		Live.advance(); //TODO set by specific distance
 	}
-	this.UI.updateScore(this.score);
+	else
+	{
+		Live = new Piece(Game.fixedBlocks,Game.blockSize);
+	}
+};
 
-
-}
 Game.stop = function(){
 	clearInterval(Game._intervalId);
 	Game.music.pause();
 	Game.music.currentTime =0;
 
-}
+};
 var controlCheck =true;
 //Need to fit into bounds the object
 Game.userInput = function(e){
@@ -255,17 +246,15 @@ Game.userInput = function(e){
 				Live.moveSideways(-20);
 				break;
 				case 32:
-				var collider = collides(Live)
-				if(collider == null)
-					Live.advance();
+				Game.update();
 				break;
 			}						
 	}
 	controlCheck =true;
-}
+};
 
 stopScroll = function(e)
 {
 	e.preventDefault();
-}
+};
 
