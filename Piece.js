@@ -1,5 +1,6 @@
 function Piece(fB,blockSize)
 {
+
 	this.fixedBlocks = fB
 	this.x=100;
 	this.y=-40;
@@ -7,27 +8,29 @@ function Piece(fB,blockSize)
 	var shape = Math.floor(Math.random()*7);
 	switch(shape){
 		case 0:
-		this.blocks = (new Ls(this.velocity)).blocks;
+		shape = (new Ls(this.velocity));
 		break;
 		case 1:
-		this.blocks = (new Lf(this.velocity)).blocks;;
+		shape = (new Lf(this.velocity));;
 		break;
 		case 2:
-		this.blocks = (new I(this.velocity)).blocks;;
+		shape = (new I(this.velocity));
 		break;
 		case 3:
-		this.blocks = (new T(this.velocity)).blocks;;
+		shape = (new T(this.velocity));
 		break;
 		case 4:
-		this.blocks = (new B(this.velocity)).blocks;;
+		shape = (new B(this.velocity));
 		break;
 		case 5:
-		this.blocks = (new Ss(this.velocity)).blocks;;
+		shape = (new Ss(this.velocity));
 		break;
 		case 6:
-		this.blocks =(new Sf(this.velocity)).blocks; ;
+		shape =(new Sf(this.velocity));
 		break;
 	}
+	this.blocks =shape.blocks;
+	this.center = shape.center;
 		
 		this.draw = function(context){
 		
@@ -69,11 +72,14 @@ function Piece(fB,blockSize)
 			var angle =angle*2*Math.PI/360;
 			var newCoords = [];
 			var canMove = true;
+
+			if(this.center[0]==-1) //Prevent square from rotating.... desperate measures
+				return;
 			//We will calculate the tentative new position of every block and evaluate whether that position is available
 			for(var i= 0; i<this.blocks.length && canMove;i++)
 			{
-				var tempX =Math.cos(angle)*this.blocks[i].x -Math.sin(angle)*this.blocks[i].y;
-				var tempY =Math.sin(angle)*this.blocks[i].x +Math.cos(angle)*this.blocks[i].y;
+				var tempX = Math.cos(angle)*(this.blocks[i].x-this.center[0]) -Math.sin(angle)*(this.blocks[i].y-this.center[1]) +this.center[0];
+				var tempY =Math.sin(angle)*(this.blocks[i].x-this.center[0]) +Math.cos(angle)*(this.blocks[i].y-this.center[1]) +this.center[1];
 
 				newCoords.push([tempX,tempY]); //new set of coordiantes
 

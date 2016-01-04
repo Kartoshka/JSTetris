@@ -34,7 +34,7 @@ var T = function(blockSize){
 var B= function(blockSize){
 	this.color ="#a854f0";
 	this.blocks = [new miniBlock(this.color,0,0,blockSize),new miniBlock(this.color,blockSize,0,blockSize),new miniBlock(this.color,0,blockSize,blockSize),new miniBlock(this.color,blockSize,blockSize,blockSize)];
-	this.center =[0,0];
+	this.center =[-1,-1];
 	};
 //squigly straight
 var Ss= function(blockSize){

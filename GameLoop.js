@@ -236,6 +236,7 @@ Game.stop = function(){
 	Game.score =0;
 	Game.UI.updateScore(Game.score);
 	Game.draw();
+	Live=null;
 
 };
 var controlCheck =true;
@@ -266,21 +267,20 @@ Game.userInput = function(e){
 
 stopScroll = function(e)
 {
-	e.preventDefault();
+	e.preventDefault();	
 };
 
 //Jquery
 $(document).ready(function(){
     $('a.toggler').click(function(){
         $(this).toggleClass('off');
+        if(Live !=null)
+        {
         if(Game.musicToggle)
-        {
         	Game.music.pause();
-        }
         else
-        {
         	Game.music.play();
-        }
+   		}	
         Game.musicToggle = !Game.musicToggle;
     });
 });
