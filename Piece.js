@@ -95,6 +95,10 @@ Piece = function(fB,blockSize,active, shape)
 			var newCoords = [];
 			var canMove = true;
 
+			var shiftLeft =999999;
+			var shiftRight=-999999;
+			var height=0;
+
 			if(this.center[0]==-1) //Prevent square from rotating.... desperate measures
 				return;
 			//We will calculate the tentative new position of every block and evaluate whether that position is available
@@ -111,8 +115,23 @@ Piece = function(fB,blockSize,active, shape)
 				//If we dont spill out from either wall we verify whether the position is available
 				if(blockCol >= 0 && blockCol <(this.fixedBlocks.length))
 					canMove = canMove && (this.fixedBlocks[blockCol][blockRow]==null); 
-				//We dont actually prevent insertion into out of bounds
+				else if(blockCol<0 && (0-blockCol)>shiftRight)
+				{
+						shiftRight = (0-blockCol);
+						height = blockRow;
+				}
+				else if((blockCol)>=this.fixedBlocks.length && (this.fixedBlocks.length -(blockCol +1) )> shiftLeft)
+				{
+					shiftLeft = this.fixedBlocks.length -(blockCol +1);
+					height = blockRow;
+				}
+
 			}
+
+			if(shiftLeft <999999)
+				canMove = canMove && fixedBlocks[(this.X/this.blockSize) + shiftLeft][height] ==null;
+			else if(shiftRight >-999999)
+				canMove = canMove && fixedBlocks[(this.X/this.blockSize) + shiftRight][height] ==null;
 
 			if(canMove)
 			{
@@ -121,7 +140,7 @@ Piece = function(fB,blockSize,active, shape)
 					this.blocks[b].x = newCoords[b][0];
 					this.blocks[b].y= newCoords[b][1];
 				}
-				this.fitScreen();
+				//this.fitScreen();
 			}
 		};
 
@@ -157,18 +176,6 @@ Piece = function(fB,blockSize,active, shape)
 
 		};	
 }
-
-function Piece(fB,blockSize,active)
-{
-	this.shadow =!active;
-	this.fixedBlocks = fB
-	this.x=100;
-	this.y=-20;
-	this.velocity=blockSize;
-
-
-	new Piece(fB, blockSize, active, shape);
-};
 
 
 
