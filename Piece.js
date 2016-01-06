@@ -120,7 +120,7 @@ Piece = function(fB,blockSize,active, shape)
 						shiftRight = (0-blockCol);
 						height = blockRow;
 				}
-				else if((blockCol)>=this.fixedBlocks.length && (this.fixedBlocks.length -(blockCol +1) )> shiftLeft)
+				else if((blockCol)>=this.fixedBlocks.length && (this.fixedBlocks.length -(blockCol +1))> shiftLeft)
 				{
 					shiftLeft = this.fixedBlocks.length -(blockCol +1);
 					height = blockRow;
@@ -140,7 +140,7 @@ Piece = function(fB,blockSize,active, shape)
 					this.blocks[b].x = newCoords[b][0];
 					this.blocks[b].y= newCoords[b][1];
 				}
-				//this.fitScreen();
+				this.fitScreen();
 			}
 		};
 
