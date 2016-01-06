@@ -11,16 +11,27 @@ if ($mysqli->connect_errno) {
 
 
 //DISPLAYS HIGHSCORES
-$query = "SELECT * FROM Highscores";
+$query = "SELECT * FROM Highscores ORDER BY Score DESC";
 $result = $mysqli->query($query);
 
 
 /* numeric array */
 if ($result->num_rows > 0) {
     // output data of each row
+    echo "<table >
+  	<tr>
+    <td >Name </td>
+    <td >Score</td>
+    <td >Date</td>
+  	</tr>";
     while($row = $result->fetch_assoc()) {
-        echo "Name: " . $row["Name"]. " - score: " . $row["Score"]. "Date: " . $row["Date"]. "<br>";
-    }
+        echo "<tr>";
+		  echo "<td>".$row['Name']."</td>";
+		  echo "<td>".$row['Score']."</td>";
+		  echo "<td>".$row['Date']."</td>";
+		  echo "</tr>";
+		}	
+	echo "</table>";
 } else {
     echo "0 results";
 }
