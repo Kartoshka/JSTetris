@@ -10,7 +10,7 @@ Piece = function(fB,blockSize,active, shape)
 	this.shapeName =shape;
 	if(shape ==null)
 	{
-		this.shapeName =Math.floor(Math.random()*7);;
+		this.shapeName =Math.floor(Math.random()*700) %7;
 	}
 	var shape;
 	switch(this.shapeName){

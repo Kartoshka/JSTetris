@@ -11,7 +11,7 @@ if ($mysqli->connect_errno) {
 
 
 //DISPLAYS HIGHSCORES
-$query = "SELECT * FROM Highscores ORDER BY Score DESC";
+$query = "SELECT * FROM Highscores";
 $result = $mysqli->query($query);
 
 

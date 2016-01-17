@@ -19,6 +19,10 @@ a.toggler.off {
     border-left-width: 15px;
 }
 
+textarea {
+    resize: none;
+}
+
 </style>
 </head>
 <body>
@@ -40,13 +44,26 @@ Your browser does not support the HTML5 canvas tag.
 <p><b>Rotate CCW/CW:</b> z/x</p>
 <p> <b>Soft Drop/Hard Drop:</b> Down arrow / Space bar</p>
 <p> <b>Hold:</b> Shift</p>
+<h2><a href = "Highscore/seeHighscore.php">Leaderboard</a></h2>
+<p><b>HighestScore</b></p><p id="HS"><p><br>
+
+
+
+
+  <b>Name:<b><br>
+  <input type="text" id ="userN" value="">
+  <br><br>
+  <input type="submit" onclick ="submitScore()" value="Submit">
+
 </center>
+<p id= "Scores"></p>
 </body>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="miniBlock.js"></script>
-<script type="text/javascript" charset="utf-8" src="Piece.js"></script>
-<script type="text/javascript" charset="utf-8" src="GameUI.js"></script>
-<script type="text/javascript" charset="utf-8" src="GameLoop.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="Game/miniBlock.js"></script>
+<script type="text/javascript" charset="utf-8" src="Game/Piece.js"></script>
+<script type="text/javascript" charset="utf-8" src="Game/GameUI.js"></script>
+<script type="text/javascript" charset="utf-8" src="Game/GameLoop.js"></script>
 
 </html>

@@ -39,13 +39,22 @@ Game.music.volume = 0.25
 Game.score =0;
 Game.UI = new GameUI();
 Game.canSwitch =true;
-
+Game.scoring = [40,100,300,1200];
+Game.level = 1;
+Game.linesCleared =0;
+Game.finalScore=0;
+Game.username =null;
 
 //Game logic variables
 //The indices run from 0 at the top of the matrix (ceiling) to 20, bottom of matrix (floor)
 Game.fixedBlocks;
 Game.resetField = function()
 {
+	Game.score =0;
+	Game.username=null
+	Game.level =1;
+	Game.speed=30;
+
 	Game.fixedBlocks =[];
 	for(var col =0; col<Game.width/Game.blockSize;col++)
 	{
@@ -89,7 +98,10 @@ function collides(p)
 		{
 		if(!p.shadow){
 			if(blockY <= 0) //If our block just spawned and it collided, game ends
-			{
+			{	
+				if(Game.score>Game.finalScore)
+					Game.finalScore =Game.score;
+				$("#HS").html(Game.finalScore);
 				Game.stop();
 				alert("Game is over");
 				
@@ -169,8 +181,22 @@ Game.clearBlocks = function()
 			Game.fixedBlocks[c][0] =null;
 		}
 	}
-	Game.score += Game.deleteRows.length;
-	Game.deleteRows= [];
+	if(Game.deleteRows.length>0)
+	{
+		Game.score += Game.scoring[Game.deleteRows.length-1]*(Game.level+1);
+		Game.linesCleared += Game.deleteRows.length;
+
+		if(Game.linesCleared >Game.level*10)
+		{
+			Game.level++;
+			if(Game.speed >5)
+			{
+				Game.speed-=2;
+			}
+			runtime=0;
+		}
+		Game.deleteRows= [];
+	}
 
 };
 //Game Stuff
@@ -182,9 +208,9 @@ Game.canvas = document.getElementById("myCanvas").getContext("2d");
 //Focuses on canvas
 document.getElementById("myCanvas").focus();
 //Disables scrolling
-window.addEventListener('keydown',stopScroll,true);
+window.addEventListener('keydown',stopScroll);
 //Sets user controls
-document.getElementById("myCanvas").addEventListener('keydown', Game.userInput, true);
+document.getElementById("myCanvas").addEventListener('keydown', Game.userInput);
 
 //Gets music and  plays
 if(Game.musicToggle)
@@ -266,6 +292,8 @@ Game.stop = function(){
 	Game.UI.updateScore(Game.score);
 	Game.draw();
 	Live=null;
+	window.removeEventListener("keydown", stopScroll);
+	document.getElementById("myCanvas").removeEventListener('keydown', Game.userInput);
 
 };
 
@@ -304,13 +332,13 @@ Game.hold = function()
 var controlCheck =true;
 //Need to fit into bounds the object
 Game.userInput = function(e){
-		if(controlCheck){
-			controlCheck = false;
 			switch(e.keyCode){
-				case 88 : //Up
+				case 88 : //x
+				case 38: //Up
 				Live.rotate(90);
 				break;
-				case 90: //Down
+				case 90: //z
+				case 17: //Ctrl
 				Live.rotate(-90);
 				break;
 				case 39: //Right
@@ -319,18 +347,21 @@ Game.userInput = function(e){
 				case 37: //Left
 				Live.moveSideways(-Game.blockSize);
 				break;
-				case 40:
+				case 40: //Down
 				Game.update();
 				break;
-				case 32:
+				case 32: // Space
 				Game.hardDrop(Live);
 				break;
-				case 16:
+				case 16: //Shift
 				Game.hold(Live);
 				break;
+
+				runtime =0;
+
 			}
 		 updateShadow(Live);
-	}
+	
 	controlCheck =true;
 };
 
@@ -353,3 +384,12 @@ $(document).ready(function(){
         Game.musicToggle = !Game.musicToggle;
     });
 });
+
+function submitScore() {
+	var name =document.getElementById("userN").value;
+	name.trim();
+	console.log(name);
+	if(name !="" && Game.finalScore !=0)
+		$.post("Highscore/submitScore.php",{'score':Game.finalScore,'name':name});
+
+};
