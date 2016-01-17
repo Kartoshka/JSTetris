@@ -20,7 +20,7 @@ $query =  "INSERT INTO Highscores (Name, Score, Date)
 VALUES ('".$name."', '".$score."', '".$dateS."')";
 
 if ($mysqli->query($query) === TRUE) {
-    echo "New record created successfully <br>";
+    header("Location : Highscore/seeHighscore.php");
 } else {
     echo "Error: " . $sql . "<br>" . $mysqli->error;
 }
